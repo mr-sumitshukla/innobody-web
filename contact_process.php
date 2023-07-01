@@ -1,37 +1,45 @@
 <?php
+    $webhookUrl = 'https://hooks.slack.com/services/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';
 
-    $to = "rockybd1995@gmail.com";
-    $from = $_REQUEST['email'];
+    // Validate the form fields
     $name = $_REQUEST['name'];
+    $email = $_REQUEST['email'];
     $subject = $_REQUEST['subject'];
-    $number = $_REQUEST['number'];
-    $cmessage = $_REQUEST['message'];
+    $message = $_REQUEST['message'];
 
-    $headers = "From: $from";
-	$headers = "From: " . $from . "\r\n";
-	$headers .= "Reply-To: ". $from . "\r\n";
-	$headers .= "MIME-Version: 1.0\r\n";
-	$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+    if (empty($name) || empty($email) || empty($subject) || empty($message)) {
+        // Handle the case when one or more fields are missing
+        die("Please fill out all the required fields.");
+    }
 
-    $subject = "You have a message from your Bitmap Photography.";
+    // Construct the Slack message
+    $message = "New contact form submission:\n\n";
+    $message .= "Name: " . $name . "\n";
+    $message .= "Email: " . $email . "\n";
+    $message .= "Subject: " . $subject . "\n";
+    $message .= "Message: " . $message . "\n";
 
-    $logo = 'img/logo.png';
-    $link = '#';
+    $data = array('text' => $message);
+    $jsonData = json_encode($data);
 
-	$body = "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Express Mail</title></head><body>";
-	$body .= "<table style='width: 100%;'>";
-	$body .= "<thead style='text-align: center;'><tr><td style='border:none;' colspan='2'>";
-	$body .= "<a href='{$link}'><img src='{$logo}' alt=''></a><br><br>";
-	$body .= "</td></tr></thead><tbody><tr>";
-	$body .= "<td style='border:none;'><strong>Name:</strong> {$name}</td>";
-	$body .= "<td style='border:none;'><strong>Email:</strong> {$from}</td>";
-	$body .= "</tr>";
-	$body .= "<tr><td style='border:none;'><strong>Subject:</strong> {$csubject}</td></tr>";
-	$body .= "<tr><td></td></tr>";
-	$body .= "<tr><td colspan='2' style='border:none;'>{$cmessage}</td></tr>";
-	$body .= "</tbody></table>";
-	$body .= "</body></html>";
+    $ch = curl_init($webhookUrl);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($jsonData)
+    ));
 
-    $send = mail($to, $subject, $body, $headers);
+    $result = curl_exec($ch);
+    curl_close($ch);
 
+    // Optionally, you can check the result of the request and handle any errors.
+    if ($result === false) {
+        // Error handling
+        die("Failed to send the Slack notification.");
+    } else {
+        // Success handling
+        echo "Slack notification sent successfully.";
+    }
 ?>
