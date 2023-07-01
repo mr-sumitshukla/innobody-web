@@ -1,12 +1,12 @@
 <?php
     // Your Slack API token
-    $slackToken = 'xoxb-5015790489412-5512476894613-eo1YCRPFDouL1uGzszB31DA7';
+    $slackToken = 'MYSLACK TOKEN';
 
     // Validate the form fields
-    $name = $_REQUEST['name'];
-    $email = $_REQUEST['email'];
-    $subject = $_REQUEST['subject'];
-    $message = $_REQUEST['message'];
+    $name = $_REQUEST['message'];
+    $email = $_REQUEST['name'];
+    $subject = $_REQUEST['email'];
+    $message = $_REQUEST['subject'];
 
     if (empty($name) || empty($email) || empty($subject) || empty($message)) {
         // Handle the case when one or more fields are missing
