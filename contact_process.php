@@ -1,5 +1,6 @@
 <?php
-    $webhookUrl = 'https://hooks.slack.com/services/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';
+    // Your Slack API token
+    $slackToken = 'xoxb-5015790489412-5512476894613-ifHXK8rLpqKGfhlwnGB3qqVY';
 
     // Validate the form fields
     $name = $_REQUEST['name'];
@@ -13,29 +14,34 @@
     }
 
     // Construct the Slack message
-    $message = "New contact form submission:\n\n";
-    $message .= "Name: " . $name . "\n";
-    $message .= "Email: " . $email . "\n";
-    $message .= "Subject: " . $subject . "\n";
-    $message .= "Message: " . $message . "\n";
+    $slackMessage = "New contact form submission:\n\n";
+    $slackMessage .= "Name: " . $name . "\n";
+    $slackMessage .= "Email: " . $email . "\n";
+    $slackMessage .= "Subject: " . $subject . "\n";
+    $slackMessage .= "Message: " . $message . "\n";
 
-    $data = array('text' => $message);
-    $jsonData = json_encode($data);
+    // Slack API endpoint for posting messages
+    $slackApiUrl = 'https://slack.com/api/chat.postMessage';
+// 
+    $data = array(
+        'token' => $slackToken,
+        'channel' => 'C053HJUK24C', // Replace with the ID of the channel you want to post the message to
+        'text' => $slackMessage
+    );
 
-    $ch = curl_init($webhookUrl);
+    // Use cURL to make the API call
+    $ch = curl_init($slackApiUrl);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Content-Type: application/json',
-        'Content-Length: ' . strlen($jsonData)
-    ));
 
     $result = curl_exec($ch);
     curl_close($ch);
 
-    // Optionally, you can check the result of the request and handle any errors.
-    if ($result === false) {
+    $response = json_decode($result, true);
+
+    // Optionally, you can check the response and handle any errors.
+    if (!$response['ok']) {
         // Error handling
         die("Failed to send the Slack notification.");
     } else {
