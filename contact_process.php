@@ -1,6 +1,6 @@
 <?php
     // Your Slack API token
-    $slackToken = 'xoxb-5015790489412-5512476894613-ifHXK8rLpqKGfhlwnGB3qqVY';
+    $slackToken = 'xoxb-5015790489412-5512476894613-eo1YCRPFDouL1uGzszB31DA7';
 
     // Validate the form fields
     $name = $_REQUEST['name'];
